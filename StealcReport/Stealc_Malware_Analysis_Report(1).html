@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stealc Info-Stealer — Malware Analysis Report</title>
+<style>
+  :root {
+    --yellow: #ffc843;
+    --black: #161616;
+    --white: #ffffff;
+    --muted: #a9a9a9;
+    --line: #303030;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--black);
+    color: var(--white);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.55;
+  }
+
+  .container {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+  }
+
+  header {
+    min-height: 86vh;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: "MALWARE";
+    position: absolute;
+    right: -40px;
+    bottom: -45px;
+    font-size: clamp(90px, 18vw, 220px);
+    font-weight: 900;
+    letter-spacing: -0.08em;
+    color: rgba(255, 200, 67, 0.045);
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--yellow);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 3px;
+    background: var(--yellow);
+  }
+
+  h1 {
+    margin: 22px 0 12px;
+    font-size: clamp(54px, 9vw, 108px);
+    line-height: .9;
+    letter-spacing: -.065em;
+    font-weight: 950;
+  }
+
+  h1 span { color: var(--yellow); }
+
+  .lead {
+    max-width: 760px;
+    color: #d0d0d0;
+    font-size: 19px;
+    margin: 25px 0 38px;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  .meta > div {
+    background: var(--black);
+    padding: 18px 20px;
+  }
+
+  .label {
+    display: block;
+    color: var(--yellow);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: 6px;
+  }
+
+  .value {
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  main { padding: 80px 0; }
+
+  section {
+    padding: 42px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .section-head {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 20px;
+    align-items: start;
+    margin-bottom: 28px;
+  }
+
+  .number {
+    color: var(--yellow);
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: .1em;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 45px);
+    letter-spacing: -.04em;
+    line-height: 1;
+  }
+
+  h3 {
+    font-size: 15px;
+    margin: 26px 0 10px;
+    color: var(--yellow);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+  }
+
+  p { color: #d1d1d1; }
+
+  ul {
+    margin: 0;
+    padding-left: 22px;
+  }
+
+  li {
+    margin: 10px 0;
+    color: #d1d1d1;
+  }
+
+  li::marker { color: var(--yellow); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .card {
+    border: 1px solid var(--line);
+    padding: 24px;
+    background: #161616;
+  }
+
+  .card strong { color: var(--yellow); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  th {
+    text-align: left;
+    color: var(--black);
+    background: var(--yellow);
+    padding: 13px 15px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  td {
+    padding: 14px 15px;
+    border-top: 1px solid var(--line);
+    color: #d7d7d7;
+    font-size: 14px;
+    vertical-align: top;
+  }
+
+  td:first-child {
+    color: var(--yellow);
+    font-weight: 800;
+    width: 30%;
+  }
+
+  code {
+    color: var(--yellow);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: .92em;
+  }
+
+  .ioc {
+    border-left: 4px solid var(--yellow);
+    padding: 18px 20px;
+    background: #161616;
+    border-top: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin: 12px 0;
+    word-break: break-word;
+  }
+
+  .ioc .type {
+    color: var(--yellow);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .ioc .indicator {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    color: white;
+  }
+
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-top: 25px;
+  }
+
+  .flow .step {
+    flex: 1;
+    border: 1px solid var(--line);
+    padding: 20px;
+    position: relative;
+  }
+
+  .flow .step + .step { border-left: 0; }
+
+  .flow .step:not(:last-child)::after {
+    content: "→";
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--yellow);
+    color: var(--black);
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+  }
+
+  .step-num {
+    color: var(--yellow);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .1em;
+  }
+
+  .step-title {
+    font-weight: 850;
+    margin-top: 7px;
+  }
+
+  .callout {
+    margin-top: 30px;
+    padding: 24px;
+    border: 1px solid var(--yellow);
+  }
+
+  .callout strong {
+    color: var(--yellow);
+    display: block;
+    margin-bottom: 7px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-size: 12px;
+  }
+
+  footer {
+    padding: 30px 0 45px;
+    color: var(--muted);
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  @media (max-width: 760px) {
+    .container { width: min(100% - 28px, 1120px); }
+    .meta, .grid { grid-template-columns: 1fr; }
+    .section-head { grid-template-columns: 50px 1fr; gap: 12px; }
+    .flow { flex-direction: column; }
+    .flow .step + .step { border-left: 1px solid var(--line); border-top: 0; }
+    .flow .step:not(:last-child)::after {
+      right: 50%;
+      top: auto;
+      bottom: -14px;
+      transform: translateX(50%);
+    }
+    footer { flex-direction: column; }
+  }
+
+  @media print {
+    body { background: var(--black); }
+    header { min-height: 95vh; }
+    section { break-inside: avoid; }
+    .container { width: 94%; }
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <div class="container">
+    <div class="eyebrow">Malware Analysis / Technical Report</div>
+    <h1>Stealc<br><span>Info-Stealer</span></h1>
+    <p class="lead">
+      Packed dropper analysis focused on manual unpacking, Windows API behavior,
+      registry activity, C2 communications and payload execution.
+    </p>
+
+    <div class="meta">
+      <div>
+        <span class="label">Sample Type</span>
+        <span class="value">Packed Windows Dropper</span>
+      </div>
+      <div>
+        <span class="label">Tools</span>
+        <span class="value">x64dbg · WinAPI tracing</span>
+      </div>
+      <div>
+        <span class="label">Analysis Focus</span>
+        <span class="value">Unpacking · C2 · Execution</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+<section>
+  <div class="section-head">
+    <div class="number">01</div>
+    <h2>Initial Observation</h2>
+  </div>
+  <ul>
+    <li>Packed sample of <strong>Stealc info-stealer</strong> was analyzed.</li>
+    <li>Manual unpacking was performed using <strong>x64dbg</strong>, with <strong>VirtualAlloc</strong> traced to observe memory allocation.</li>
+    <li>The dropper's PE image was dumped from process memory.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="section-head">
+    <div class="number">02</div>
+    <h2>Imported Libraries &amp; Functions</h2>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <strong>Ws2_32.dll</strong>
+      <p>Networking-related functions.</p>
+    </div>
+    <div class="card">
+      <strong>Shell32.dll</strong>
+      <p>Shell execution functions.</p>
+    </div>
+  </div>
+
+  <h3>Registry Manipulation</h3>
+  <table>
+    <thead>
+      <tr><th>API</th><th>Observed use</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>RegCreateKeyExA</td><td>Creates the observed registry key.</td></tr>
+      <tr><td>RegSetValueExA</td><td>Sets the installation marker.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Registry Activity</h3>
+  <div class="ioc">
+    <div class="type">Registry Key</div>
+    <div class="indicator">HKCU\Software\BroomCleaner</div>
+  </div>
+  <div class="ioc">
+    <div class="type">Registry Value</div>
+    <div class="indicator">Installed = 1</div>
+  </div>
+</section>
+
+<section>
+  <div class="section-head">
+    <div class="number">03</div>
+    <h2>Network Activity</h2>
+  </div>
+
+  <p>Observed remote endpoints used by the dropper for payload delivery:</p>
+
+  <div class="ioc">
+    <div class="type">C2 / Payload</div>
+    <div class="indicator">hxxp://185.172.128[.]59/syncUpd.exe</div>
+  </div>
+  <div class="ioc">
+    <div class="type">C2</div>
+    <div class="indicator">hxxp://185.172.128[.]90/cpa/ping.php</div>
+  </div>
+  <div class="ioc">
+    <div class="type">C2</div>
+    <div class="indicator">hxxp://185.172.128[.]228/ping.php</div>
+  </div>
+
+  <h3>Additional Payloads</h3>
+  <p>Drops <strong>BroomSetup.exe</strong> after fetching <strong>syncUpd.exe</strong>.</p>
+</section>
+
+<section>
+  <div class="section-head">
+    <div class="number">04</div>
+    <h2>Execution Flow</h2>
+  </div>
+
+  <div class="flow">
+    <div class="step">
+      <div class="step-num">01 / UNPACK</div>
+      <div class="step-title">Packed Sample</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02 / DOWNLOAD</div>
+      <div class="step-title">Payload Delivery</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03 / DROP</div>
+      <div class="step-title">BroomSetup.exe</div>
+    </div>
+    <div class="step">
+      <div class="step-num">04 / EXECUTE</div>
+      <div class="step-title">ShellExecuteExA</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Observed execution</strong>
+    <p>
+      After download, the dropper executes <code>syncUpd.exe</code> and
+      <code>BroomSetup.exe</code> via <code>ShellExecuteExA</code>.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="section-head">
+    <div class="number">05</div>
+    <h2>Behavioral Summary</h2>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Behavior</th><th>Observed Activity</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Persistence</td>
+        <td>Registry key creation establishes an installation marker.</td>
+      </tr>
+      <tr>
+        <td>Payload Delivery</td>
+        <td>Connects to multiple remote endpoints to fetch executables.</td>
+      </tr>
+      <tr>
+        <td>Execution</td>
+        <td>Uses Shell32 API to execute dropped files.</td>
+      </tr>
+      <tr>
+        <td>Stealth / Packing</td>
+        <td>Packed sample required manual unpacking to reveal dropper logic.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <div class="section-head">
+    <div class="number">06</div>
+    <h2>Indicators of Compromise</h2>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Category</th><th>Indicator</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Registry Key</td><td><code>HKCU\Software\BroomCleaner</code></td></tr>
+      <tr><td>Registry Value</td><td><code>Installed = 1</code></td></tr>
+      <tr><td>Network</td><td><code>185.172.128.59</code></td></tr>
+      <tr><td>Network</td><td><code>185.172.128.90</code></td></tr>
+      <tr><td>Network</td><td><code>185.172.128.228</code></td></tr>
+      <tr><td>Dropped File</td><td><code>syncUpd.exe</code></td></tr>
+      <tr><td>Dropped File</td><td><code>BroomSetup.exe</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Analyst Note</strong>
+    <p>
+      This report records the observations and indicators supplied for the analyzed sample.
+      It does not independently validate attribution, infrastructure ownership,
+      or the broader malware campaign.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <span>STEALC INFO-STEALER · PACKED DROPPER</span>
+  <span>Malware Analysis Report</span>
+</footer>
+
+</main>
+</body>
+</html>
