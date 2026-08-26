@@ -424,6 +424,22 @@
     <div class="type">C2 / Payload</div>
     <div class="indicator">hxxp://185.172.128[.]59/syncUpd.exe</div>
   </div>
+
+  <div class="ioc">
+    <div class="type">C2 / Payload</div>
+    <div class="indicator">hxxp://185.172.128[.]228/BroomSetup.exe
+        <div class="subind">
+
+           [HTTP Request]
+           GET /BroomSetup.exe HTTP/1.1
+           Host: 185.172.128.228  
+           User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.129 Safari/537.36
+
+        </div>
+       
+    </div>
+  </div>
+  
   <div class="ioc">
     <div class="type">C2</div>
     <div class="indicator">hxxp://185.172.128[.]90/cpa/ping.php</div>
@@ -434,7 +450,7 @@
   </div>
 
   <h3>Additional Payloads</h3>
-  <p>Drops <strong>BroomSetup.exe</strong> after fetching <strong>syncUpd.exe</strong>.</p>
+  <p>Downloads <strong>BroomSetup.exe</strong> after fetching <strong>syncUpd.exe</strong>.</p>
 </section>
 
 <section>
@@ -469,8 +485,8 @@
   <div class="callout">
     <strong>Observed execution</strong>
     <p>
-      After download, the dropper executes <code>syncUpd.exe</code> and
-      <code>BroomSetup.exe</code> via <code>ShellExecuteExA</code>.
+      After download, the dropper executes <code>syncUpd.exe(u5vg.0.exe)</code> and
+      <code>BroomSetup.exe(u5vg.1.exe)</code> via <code>ShellExecuteExA</code>.
     </p>
   </div>
 </section>
