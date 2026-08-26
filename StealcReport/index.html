@@ -445,21 +445,25 @@
 
   <div class="flow">
     <div class="step">
-      <div class="step-num">01 / UNPACK</div>
+      <div class="step-num">01 / UNPACKING DROPPER PE</div>
       <div class="step-title">Packed Sample</div>
     </div>
+
     <div class="step">
-      <div class="step-num">02 / DOWNLOAD</div>
-      <div class="step-title">Payload Delivery</div>
+      <div class="step-num">02 / Persistence</div>
+      <div class="step-title">Modify Registry (Marker/Flag)</div>
     </div>
+    
     <div class="step">
-      <div class="step-num">03 / DROP</div>
-      <div class="step-title">BroomSetup.exe</div>
+      <div class="step-num">03 / DOWNLOAD </div>
+      <div class="step-title">Payloads Delivery</div>
     </div>
     <div class="step">
       <div class="step-num">04 / EXECUTE</div>
-      <div class="step-title">ShellExecuteExA</div>
+      <div class="step-title">ShellExecuteExA / Payload Execution</div>
     </div>
+
+ 
   </div>
 
   <div class="callout">
@@ -540,9 +544,9 @@
     <tbody>
       <tr><td>Registry Key</td><td><code>HKCU\Software\BroomCleaner</code></td></tr>
       <tr><td>Registry Value</td><td><code>Installed = 1</code></td></tr>
-      <tr><td>Network</td><td><code>185.172.128.59</code></td></tr>
-      <tr><td>Network</td><td><code>185.172.128.90</code></td></tr>
-      <tr><td>Network</td><td><code>185.172.128.228</code></td></tr>
+      <tr><td>Network</td><td><code>185.172.128.59 - RU</code></td></tr>
+      <tr><td>Network</td><td><code>185.172.128.90 - RU</code></td></tr>
+      <tr><td>Network</td><td><code>185.172.128.228 - RU</code></td></tr>
       <tr><td>Dropped File</td><td><code>C:\Users\<[username]>\AppData\Local\Temp\u5vg.0.exe (The first PE file [syncUpd.exe] from endpoint)</code></td></tr>
       <tr><td>Dropped File</td><td><code>C:\Users\<[username]>\AppData\Local\Temp\u5vg.1.exe (The second PE file [BroomSetup.exe] from endpoint)</code></td></tr>
     </tbody>
