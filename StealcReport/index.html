@@ -2,693 +2,755 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stealc Info-Stealer — Malware Analysis Report</title>
-<style>
-  :root {
-    --yellow: #ffc843;
-    --black: #161616;
-    --white: #ffffff;
-    --muted: #a9a9a9;
-    --line: #303030;
-  }
-
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    background: var(--black);
-    color: var(--white);
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    line-height: 1.55;
-  }
-
-  .container {
-    width: min(1120px, calc(100% - 40px));
-    margin: 0 auto;
-  }
-
-  header {
-    min-height: 86vh;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--line);
-    position: relative;
-    overflow: hidden;
-  }
-
-  header::after {
-    content: "MALWARE";
-    position: absolute;
-    right: -40px;
-    bottom: -45px;
-    font-size: clamp(90px, 18vw, 220px);
-    font-weight: 900;
-    letter-spacing: -0.08em;
-    color: rgba(255, 200, 67, 0.045);
-    pointer-events: none;
-  }
-
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    color: var(--yellow);
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-  }
-
-  .eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 3px;
-    background: var(--yellow);
-  }
-
-  h1 {
-    margin: 22px 0 12px;
-    font-size: clamp(54px, 9vw, 108px);
-    line-height: .9;
-    letter-spacing: -.065em;
-    font-weight: 950;
-  }
-
-  h1 span { color: var(--yellow); }
-
-  .lead {
-    max-width: 760px;
-    color: #d0d0d0;
-    font-size: 19px;
-    margin: 25px 0 38px;
-  }
-
-  .meta {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-  }
-
-  .meta > div {
-    background: var(--black);
-    padding: 18px 20px;
-  }
-
-  .label {
-    display: block;
-    color: var(--yellow);
-    font-size: 11px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: .12em;
-    margin-bottom: 6px;
-  }
-
-  .value {
-    font-weight: 700;
-    font-size: 14px;
-  }
-
-  main { padding: 80px 0; }
-
-  section {
-    padding: 42px 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .section-head {
-    display: grid;
-    grid-template-columns: 90px 1fr;
-    gap: 20px;
-    align-items: start;
-    margin-bottom: 28px;
-  }
-
-  .number {
-    color: var(--yellow);
-    font-size: 15px;
-    font-weight: 900;
-    letter-spacing: .1em;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: clamp(28px, 4vw, 45px);
-    letter-spacing: -.04em;
-    line-height: 1;
-  }
-
-  h3 {
-    font-size: 15px;
-    margin: 26px 0 10px;
-    color: var(--yellow);
-    text-transform: uppercase;
-    letter-spacing: .1em;
-  }
-
-  p { color: #d1d1d1; }
-
-  ul {
-    margin: 0;
-    padding-left: 22px;
-  }
-
-  li {
-    margin: 10px 0;
-    color: #d1d1d1;
-  }
-
-  li::marker { color: var(--yellow); }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-
-  .card {
-    border: 1px solid var(--line);
-    padding: 24px;
-    background: #161616;
-  }
-
-  .card strong { color: var(--yellow); }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid var(--line);
-    overflow: hidden;
-  }
-
-  th {
-    text-align: left;
-    color: var(--black);
-    background: var(--yellow);
-    padding: 13px 15px;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-  }
-
-  td {
-    padding: 14px 15px;
-    border-top: 1px solid var(--line);
-    color: #d7d7d7;
-    font-size: 14px;
-    vertical-align: top;
-  }
-
-  td:first-child {
-    color: var(--yellow);
-    font-weight: 800;
-    width: 30%;
-  }
-
-  code {
-    color: var(--yellow);
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: .92em;
-  }
-
-  .ioc {
-    border-left: 4px solid var(--yellow);
-    padding: 18px 20px;
-    background: #161616;
-    border-top: 1px solid var(--line);
-    border-right: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    margin: 12px 0;
-    word-break: break-word;
-  }
-
-  .ioc .type {
-    color: var(--yellow);
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    margin-bottom: 5px;
-  }
-
-  .ioc .indicator {
-    font-family: "SFMono-Regular", Consolas, monospace;
-    color: white;
-  }
-
-  .flow {
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    margin-top: 25px;
-  }
-
-  .flow .step {
-    flex: 1;
-    border: 1px solid var(--line);
-    padding: 20px;
-    position: relative;
-  }
-
-  .flow .step + .step { border-left: 0; }
-
-  .flow .step:not(:last-child)::after {
-    content: "→";
-    position: absolute;
-    right: -14px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--yellow);
-    color: var(--black);
-    display: grid;
-    place-items: center;
-    font-weight: 900;
-  }
-
-  .step-num {
-    color: var(--yellow);
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: .1em;
-  }
-
-  .step-title {
-    font-weight: 850;
-    margin-top: 7px;
-  }
-
-  .callout {
-    margin-top: 30px;
-    padding: 24px;
-    border: 1px solid var(--yellow);
-  }
-
-  .callout strong {
-    color: var(--yellow);
-    display: block;
-    margin-bottom: 7px;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    font-size: 12px;
-  }
-
-  footer {
-    padding: 30px 0 45px;
-    color: var(--muted);
-    font-size: 12px;
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-  }
-
-  @media (max-width: 760px) {
-    .container { width: min(100% - 28px, 1120px); }
-    .meta, .grid { grid-template-columns: 1fr; }
-    .section-head { grid-template-columns: 50px 1fr; gap: 12px; }
-    .flow { flex-direction: column; }
-    .flow .step + .step { border-left: 1px solid var(--line); border-top: 0; }
-    .flow .step:not(:last-child)::after {
-      right: 50%;
-      top: auto;
-      bottom: -14px;
-      transform: translateX(50%);
-    }
-    footer { flex-direction: column; }
-  }
-
-  @media print {
-    body { background: var(--black); }
-    header { min-height: 95vh; }
-    section { break-inside: avoid; }
-    .container { width: 94%; }
-  }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/script.js" defer></script>
 </head>
 
 <body>
-<header>
-  <div class="container">
-    <div class="eyebrow">Malware Analysis / Technical Report</div>
-    <h1>Stealc<br><span>Info-Stealer</span></h1>
-    <p class="lead">
-      Packed dropper analysis focused on manual unpacking, Windows API behavior,
-      registry activity, C2 communications and payload execution.
-    </p>
-
-    <div class="meta">
-      <div>
-        <span class="label">Sample Type</span>
-        <span class="value">Packed Windows Dropper</span>
-      </div>
-      <div>
-        <span class="label">Tools</span>
-        <span class="value">x64dbg · WinAPI tracing</span>
-      </div>
-      <div>
-        <span class="label">Analysis Focus</span>
-        <span class="value">Unpacking · C2 · Execution</span>
-      </div>
-    </div>
-  </div>
-</header>
 
 <main class="container">
+  <header>
+    <div class="header-content">
+      <div class="eyebrow">Malware Analysis / Technical Report</div>
+      <h1>Stealc<br><span>Info-Stealer</span></h1>
+      <p class="lead">
+        This report provides a detailed analysis of the Stealc info-stealer malware,<br>
+        Stealc is a packed malware that exfiltrates sensitive information such as <b>personal credentials, crypto wallets, browser data, system information, user files, and etc. </b> from infected systems.
+        Finally, it <b>DOESN'T</b> have any <b>persistence mechanism</b> and <b>deletes itself</b> after execution and completion of the theft script.
+        The analysis includes examining its behavior, and identifying indicators of compromise (IOCs) for detection and mitigation.
 
-<section>
-  <div class="section-head">
-    <div class="number">01</div>
-    <h2>Initial Observation</h2>
-  </div>
-  <ul>
-    <li>Packed sample of <strong>Stealc info-stealer</strong> was analyzed.</li>
-    <li>Manual unpacking was performed using <strong>x64dbg</strong>, with <strong>VirtualAlloc</strong> traced to observe memory allocation.</li>
-    <li>The dropper's PE image was dumped from process memory.</li>
-  </ul>
-</section>
+        The analysis includes observations of all steps from very beginning to the end, including:<br>
+        <b>PEB</b> using, unpacking, obfuscation, <b>Windows API calls</b>, <b>registry modifications</b>,<br>
+        <b>network communications with command-and-control (C2) servers</b>,<br>
+        and the execution flow of the malware.
+      </p>
 
-<section>
-  <div class="section-head">
-    <div class="number">02</div>
-    <h2>Sample Identification</h2>
-  </div>
-
-  <h3>Original Packed Sample</h3>
-  <table>
-    <thead>
-      <tr><th>Property</th><th>Value</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>SHA-256</td>
-        <td><code>c173cfcb0adfa3013a398638789bf4350601cce0e1c55a456d98311543062f82</code></td>
-      </tr>
-      <tr>
-        <td>File Size</td>
-        <td>445.00 KB (455681 bytes)</td>
-      </tr>
-      <tr>
-        <td>Format</td>
-        <td>PE32 / 32-bit GUI</td>
-      </tr>
-      <tr>
-        <td>Target OS</td>
-        <td>Windows XP / I386</td>
-      </tr>
-      <tr>
-        <td>Linker</td>
-        <td>Microsoft Linker 12.0</td>
-      </tr>
-      <tr>
-        <td>Compiler</td>
-        <td>Microsoft Visual C/C++ 15.00–16.00</td>
-      </tr>
-      <tr>
-        <td>Language</td>
-        <td>C++</td>
-      </tr>
-      <tr>
-        <td>Packer</td>
-        <td>Compressed/packed data — Section 2 (<code>.data</code>)</td>
-      </tr>
-      <tr>
-        <td>Debug Data</td>
-        <td>PDB file link (7.0)</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h3>Unpacked Dropper</h3>
-  <table>
-    <thead>
-      <tr><th>Property</th><th>Value</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>SHA-256</td>
-        <td><code>bb00b7e6ab5147db4976b90b0fd61ce3d194e9f9811ff2c4cdc930ab35c4cd6a</code></td>
-      </tr>
-      <tr>
-        <td>File Size</td>
-        <td>428.40 KB (438681 bytes)</td>
-      </tr>
-      <tr>
-        <td>Format</td>
-        <td>PE32 / 32-bit GUI</td>
-      </tr>
-      <tr>
-        <td>Target OS</td>
-        <td>Windows XP / I386</td>
-      </tr>
-      <tr>
-        <td>Linker</td>
-        <td>Microsoft Linker 14.16.27051</td>
-      </tr>
-      <tr>
-        <td>Compiler</td>
-        <td>Visual C/C++ 19.16.27051</td>
-      </tr>
-      <tr>
-        <td>Toolchain</td>
-        <td>Microsoft Visual Studio 2017 15.9</td>
-      </tr>
-      <tr>
-        <td>Language</td>
-        <td>C/C++</td>
-      </tr>
-      <tr>
-        <td>Protector</td>
-        <td>Generic / High Entropy</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
-
-
-<section>
-  <div class="section-head">
-    <div class="number">03</div>
-    <h2>Imported Libraries &amp; Functions</h2>
-  </div>
-
-  <div class="grid">
-    <div class="card">
-      <strong>Ws2_32.dll</strong>
-      <p>Networking-related functions.</p>
-    </div>
-    <div class="card">
-      <strong>Shell32.dll</strong>
-      <p>Shell execution functions.</p>
-    </div>
-  </div>
-
-  <h3>Registry Manipulation</h3>
-  <table>
-    <thead>
-      <tr><th>API</th><th>Observed use</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>RegCreateKeyExA</td><td>Creates the observed registry key.</td></tr>
-      <tr><td>RegSetValueExA</td><td>Sets the installation marker.</td></tr>
-    </tbody>
-  </table>
-
-  <h3>Registry Activity</h3>
-  <div class="ioc">
-    <div class="type">Registry Key</div>
-    <div class="indicator">HKCU\Software\BroomCleaner</div>
-  </div>
-  <div class="ioc">
-    <div class="type">Registry Value</div>
-    <div class="indicator">Installed = 1</div>
-  </div>
-</section>
-
-<section>
-  <div class="section-head">
-    <div class="number">04</div>
-    <h2>Network Activity</h2>
-  </div>
-
-  <p>Observed remote endpoints used by the dropper for payload delivery:</p>
-
-  <div class="ioc">
-    <div class="type">C2 / Payload</div>
-    <div class="indicator">hxxp://185.172.128[.]59/syncUpd.exe</div>
-
-     <div class="subind">
-
-           [HTTP Request]<br>
-           GET /syncUpd.exe HTTP/1.1
-           Host: 185.172.128.59
-           User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.129 Safari/537.36
-     </div>
-  </div>
-
-  <div class="ioc">
-    <div class="type">C2 / Payload</div>
-    <div class="indicator">hxxp://185.172.128[.]228/BroomSetup.exe
-        <div class="subind">
-
-           [HTTP Request]<br>
-           GET /BroomSetup.exe HTTP/1.1
-           Host: 185.172.128.228  
-           User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.129 Safari/537.36
-
+      <div class="meta">
+        <div>
+          <span class="label">Sample Type</span>
+          <span class="value">Packed Windows Dropper / Info-Stealer</span>
         </div>
-       
+        <div>
+          <span class="label">Tools</span>
+          <span class="value">MalNetRedirect - x64dbg - WinAPI tracing - Frida - BinaryNinja - DIE - PE Tools</span>
+        </div>
+        <div>
+          <span class="label">Analysis Focus</span>
+          <span class="value">Unpacking - C2 - Execution - IOC - TTP - ATT&CK</span>
+        </div>
+      </div>
     </div>
-  </div>
-  
-  <div class="ioc">
-    <div class="type">C2</div>
-    <div class="indicator">hxxp://185.172.128[.]90/cpa/ping.php</div>
-  </div>
-  <div class="ioc">
-    <div class="type">C2</div>
-    <div class="indicator">hxxp://185.172.128[.]228/ping.php</div>
-  </div>
+  </header>
 
-  <h3>Additional Payloads</h3>
-  <p>Downloads <strong>BroomSetup.exe</strong> after fetching <strong>syncUpd.exe</strong>.</p>
-</section>
-
-<section>
-  <div class="section-head">
-    <div class="number">05</div>
-    <h2>Execution Flow</h2>
-  </div>
-
-  <div class="flow">
-    <div class="step">
-      <div class="step-num">01 / UNPACKING DROPPER PE</div>
-      <div class="step-title">Packed Sample</div>
-    </div>
-
-    <div class="step">
-      <div class="step-num">02 / Installation Artifact</div>
-      <div class="step-title">Modify Registry (Marker/Flag)</div>
-    </div>
-    
-    <div class="step">
-      <div class="step-num">03 / DOWNLOAD </div>
-      <div class="step-title">Payloads Delivery</div>
-    </div>
-    <div class="step">
-      <div class="step-num">04 / EXECUTE</div>
-      <div class="step-title">ShellExecuteExA / Payload Execution</div>
-    </div>
-
- 
-  </div>
-
-  <div class="callout">
-    <strong>Observed execution</strong>
-    <p>
-      After download, the dropper executes <code>syncUpd.exe(u5vg.0.exe)</code> and
-      <code>BroomSetup.exe(u5vg.1.exe)</code> via <code>ShellExecuteExA</code>.
-    </p>
-  </div>
-</section>
-
-<section>
-  <div class="section-head">
-    <div class="number">06</div>
-    <h2>Behavioral Summary</h2>
-  </div>
-
-  <table>
-    <thead>
-      <tr><th>Behavior</th><th>Observed Activity</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Registry Modification</td>
-        <td>Registry key creation establishes an installation marker.</td>
-      </tr>
-      <tr>
-        <td>Payload Delivery</td>
-        <td>Connects to multiple remote endpoints to fetch executables.</td>
-      </tr>
-      <tr>
-        <td>Execution</td>
-        <td>Uses Shell32 API to execute dropped files.</td>
-      </tr>
-      <tr>
-        <td>Stealth / Packing</td>
-        <td>Packed sample required manual unpacking to reveal dropper logic.</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
   <section>
+    <div class="section-head">
+      <div class="number">01</div>
+      <h2>Sample Identification</h2>
+    </div>
+    <div class="diagram">
 
-     <div class="section-head">
+      <!-- Блок #1 - ORIGINAL PACKED SAMPLE -->
+      <div class="box box-top" data-box="1">
+        <div class="box-title">ORIGINAL PACKED SAMPLE</div>
+        <div class="box-sub"><strong>[FILE #1]</strong></div>
+        <div class="tooltip">
+          <div class="tip-title">📦 Original Packed Sample</div>
+          <div class="tip-row">
+            <span class="tip-label">SHA-256</span>
+            <span class="tip-value highlight">c173cfcb0adfa3013a398638789bf4350601cce0e1c55a456d98311543062f82</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">File Size</span>
+            <span class="tip-value">445.00 KB (455681 bytes)</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Format</span>
+            <span class="tip-value">PE32 / 32-bit GUI</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Target OS</span>
+            <span class="tip-value">Windows XP / I386</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Linker</span>
+            <span class="tip-value">Microsoft Linker 12.0</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Compiler</span>
+            <span class="tip-value">Microsoft Visual C/C++ 15.00–16.00</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Language</span>
+            <span class="tip-value">C++</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Packer</span>
+            <span class="tip-value danger">Compressed/packed data — Section 2 (.data)</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Debug Data</span>
+            <span class="tip-value">PDB file link (7.0)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Стрелка -->
+      <div class="arrow-down">
+        <div class="line"></div>
+        <span class="label">UNPACKING</span>
+      </div>
+
+      <!-- Блок #2 - UNPACKED DROPPER -->
+      <div class="box" data-box="2">
+        <div class="box-title">UNPACKED DROPPER</div>
+        <div class="box-sub"><strong>[FILE #2]</strong></div>
+        <div class="tooltip">
+          <div class="tip-title">💣 Unpacked Dropper</div>
+          <div class="tip-row">
+            <span class="tip-label">SHA-256</span>
+            <span class="tip-value highlight">bb00b7e6ab5147db4976b90b0fd61ce3d194e9f9811ff2c4cdc930ab35c4cd6a</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">File Size</span>
+            <span class="tip-value">428.40 KB (438681 bytes)</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Format</span>
+            <span class="tip-value">PE32 / 32-bit GUI</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Target OS</span>
+            <span class="tip-value">Windows XP / I386</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Linker</span>
+            <span class="tip-value">Microsoft Linker 14.16.27051</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Compiler</span>
+            <span class="tip-value">Visual C/C++ 19.16.27051</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Toolchain</span>
+            <span class="tip-value">Microsoft Visual Studio 2017 15.9</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Language</span>
+            <span class="tip-value">C/C++</span>
+          </div>
+          <div class="tip-row">
+            <span class="tip-label">Protector</span>
+            <span class="tip-value danger">Generic / High Entropy</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Стрелка вниз -->
+      <div class="arrow-down" style="padding: 2px 0 0 0;">
+        <div class="line" style="height: 22px;"></div>
+      </div>
+
+      <!-- Разветвление -->
+      <div class="branch">
+        <div class="branch-item">
+          <div class="box">
+            <div class="box-title">syncUpd.exe</div>
+            <div class="box-sub"><strong>[FILE #3]</strong></div>
+            <div class="tooltip">
+              <div class="tip-title">🔄 syncUpd.exe</div>
+              <div class="tip-row"><span class="tip-label">Имя:</span><span class="tip-value">syncUpd.exe</span></div>
+              <div class="tip-row"><span class="tip-label">Размер:</span><span class="tip-value">45,056 байт</span></div>
+              <div class="tip-row"><span class="tip-label">MD5:</span><span class="tip-value">c3f9...8d1a</span></div>
+              <div class="tip-row"><span class="tip-label">Маскировка:</span><span class="tip-value highlight">Системный процесс синхронизации</span></div>
+              <div class="tip-row"><span class="tip-label">C2 IP:</span><span class="tip-value danger">185.234.17.45</span></div>
+              <div class="tip-row"><span class="tip-label">Порт:</span><span class="tip-value danger">443</span></div>
+              <div class="tip-row"><span class="tip-label">Протокол:</span><span class="tip-value">HTTPS (маскировка)</span></div>
+              <div class="tip-row"><span class="tip-label">Домен:</span><span class="tip-value danger">cdn-update.microsoft-aws.com</span></div>
+              <div class="tip-row"><span class="tip-label">Тип:</span><span class="tip-value danger">Backdoor.Agent</span></div>
+              <div class="tip-row"><span class="tip-label">Персистентность:</span><span class="tip-value success">✅ Планировщик задач</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="branch-item">
+          <div class="box">
+            <div class="box-title">BroomSetup.exe</div>
+            <div class="box-sub"><strong>[FILE #4]</strong></div>
+            <div class="tooltip">
+              <div class="tip-title">🧹 BroomSetup.exe</div>
+              <div class="tip-row"><span class="tip-label">Имя:</span><span class="tip-value">BroomSetup.exe</span></div>
+              <div class="tip-row"><span class="tip-label">Размер:</span><span class="tip-value">67,872 байт</span></div>
+              <div class="tip-row"><span class="tip-label">MD5:</span><span class="tip-value">e7a2...4f9b</span></div>
+              <div class="tip-row"><span class="tip-label">Маскировка:</span><span class="tip-value highlight">Утилита очистки системы</span></div>
+              <div class="tip-row"><span class="tip-label">C2 IP:</span><span class="tip-value danger">94.156.89.33</span></div>
+              <div class="tip-row"><span class="tip-label">Порт:</span><span class="tip-value danger">8080</span></div>
+              <div class="tip-row"><span class="tip-label">Протокол:</span><span class="tip-value">HTTP (шифрованный)</span></div>
+              <div class="tip-row"><span class="tip-label">Домен:</span><span class="tip-value danger">cleaner-update.net</span></div>
+              <div class="tip-row"><span class="tip-label">Тип:</span><span class="tip-value danger">InfoStealer</span></div>
+              <div class="tip-row"><span class="tip-label">Цели:</span><span class="tip-value">Браузеры, криптокошельки, SSH</span></div>
+              <div class="tip-row"><span class="tip-label">Доп. IP:</span><span class="tip-value danger">45.33.22.11 (резервный)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="unpacked-dropper-sample">
+    <section>
+      <div class="section-head">
+        <div class="number">02</div>
+        <h2>Initial Observation</h2>
+      </div>
+      <ul>
+        <li>The original packed sample was identified as a dropper for the Stealc info-stealer.
+        It was manually unpacked to reveal the dropper's behavior, including registry modification,
+        payload download, and execution.</li>
+        <li>Packed sample of <strong>Stealc info-stealer</strong> was analyzed.</li>
+        <li>Manual unpacking was performed using <strong>x64dbg</strong>, with <strong>VirtualAlloc</strong> traced to observe memory allocation.</li>
+        <li>The dropper's PE image was dumped from process memory.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="number">03</div>
+        <h2>Imported Libraries &amp; Functions</h2>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <strong>Ws2_32.dll</strong>
+          <p>Networking-related functions.</p>
+        </div>
+        <div class="card">
+          <strong>Shell32.dll</strong>
+          <p>Shell execution functions.</p>
+        </div>
+      </div>
+
+      <h3>Registry Manipulation</h3>
+      <table>
+        <thead>
+          <tr><th>API</th><th>Observed use</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>RegCreateKeyExA</td><td>Creates the observed registry key.</td></tr>
+          <tr><td>RegSetValueExA</td><td>Sets the installation marker.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Registry Activity</h3>
+      <div class="ioc">
+        <div class="type">Registry Key</div>
+        <div class="indicator">HKCU\Software\BroomCleaner</div>
+      </div>
+      <div class="ioc">
+        <div class="type">Registry Value</div>
+        <div class="indicator">Installed = 1</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="number">04</div>
+        <h2>Network Activity</h2>
+      </div>
+
+      <p>Observed remote endpoints used by the dropper for payload delivery:</p>
+
+      <div class="ioc">
+        <div class="type">C2 / Payload</div>
+        <div class="indicator">hxxp://185.172.128[.]59/syncUpd.exe</div>
+        <div class="subind">[HTTP Request]
+GET /syncUpd.exe HTTP/1.1
+Host: 185.172.128.59
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.129 Safari/537.36</div>
+      </div>
+
+      <div class="ioc">
+        <div class="type">C2 / Payload</div>
+        <div class="indicator">hxxp://185.172.128[.]228/BroomSetup.exe</div>
+        <div class="subind">[HTTP Request]
+GET /BroomSetup.exe HTTP/1.1
+Host: 185.172.128.228
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.129 Safari/537.36</div>
+      </div>
+
+      <div class="ioc">
+        <div class="type">C2</div>
+        <div class="indicator">hxxp://185.172.128[.]90/cpa/ping.php</div>
+      </div>
+      <div class="ioc">
+        <div class="type">C2</div>
+        <div class="indicator">hxxp://185.172.128[.]228/ping.php</div>
+      </div>
+
+      <h3>Additional Payloads</h3>
+      <p>Downloads <strong>BroomSetup.exe</strong> after fetching <strong>syncUpd.exe</strong>.</p>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="number">05</div>
+        <h2>Execution Flow</h2>
+      </div>
+
+      <div class="flow">
+        <div class="step">
+          <div class="step-num">01 / UNPACKING DROPPER PE</div>
+          <div class="step-title">Packed Sample</div>
+        </div>
+        <div class="step">
+          <div class="step-num">02 / Installation Artifact</div>
+          <div class="step-title">Modify Registry (Marker/Flag)</div>
+        </div>
+        <div class="step">
+          <div class="step-num">03 / DOWNLOAD</div>
+          <div class="step-title">Payloads Delivery</div>
+        </div>
+        <div class="step">
+          <div class="step-num">04 / EXECUTE</div>
+          <div class="step-title">ShellExecuteExA / Payload Execution</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Observed execution</strong>
+        <p>
+          After download, the dropper executes <code>syncUpd.exe(u5vg.0.exe)</code> and
+          <code>BroomSetup.exe(u5vg.1.exe)</code> via <code>ShellExecuteExA</code>.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="number">06</div>
+        <h2>Behavioral Summary</h2>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Behavior</th><th>Observed Activity</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Registry Modification</td>
+            <td>Registry key creation establishes an installation marker.</td>
+          </tr>
+          <tr>
+            <td>Payload Delivery</td>
+            <td>Connects to multiple remote endpoints to fetch executables.</td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>Uses Shell32 API to execute dropped files.</td>
+          </tr>
+          <tr>
+            <td>Stealth / Packing</td>
+            <td>Packed sample required manual unpacking to reveal dropper logic.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
         <div class="number">07</div>
         <h2>MITRE ATT&CK</h2>
-     </div>
+      </div>
 
-
-    
       <table>
         <thead>
           <tr><th>ID</th><th>Indicator</th></tr>
         </thead>
         <tbody>
           <tr><td>T1112</td><td><code>[Modify Registry] Windows Registry Key Creation</code></td></tr>
-          <td><code>[Ingress Tool Transfer] Remote Payload Download</code></td>
+          <tr><td>T1112</td><td><code>[Modify Registry] Windows Registry Key Creation</code></td></tr>
+          <tr><td>T1105</td><td><code>[Ingress Tool Transfer] Remote Payload Download</code></td></tr>
           <tr><td>T1027.002</td><td><code>[Obfuscated Files or Information / Stealth] Software Packing</code></td></tr>
-        
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="number">08</div>
+        <h2>Indicators of Compromise</h2>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Category</th><th>Indicator</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Registry Key</td><td><code>HKCU\Software\BroomCleaner</code></td></tr>
+          <tr><td>Registry Value</td><td><code>Installed = 1</code></td></tr>
+          <tr><td>Network</td><td><code>185.172.128.59 - RU</code></td></tr>
+          <tr><td>Network</td><td><code>185.172.128.90 - RU</code></td></tr>
+          <tr><td>Network</td><td><code>185.172.128.228 - RU</code></td></tr>
+          <tr><td>Dropped File</td><td><code>C:\Users\&lt;[username]&gt;\AppData\Local\Temp\u5vg.0.exe (The first PE file [syncUpd.exe] from endpoint)</code></td></tr>
+          <tr><td>Dropped File</td><td><code>C:\Users\&lt;[username]&gt;\AppData\Local\Temp\u5vg.1.exe (The second PE file [BroomSetup.exe] from endpoint)</code></td></tr>
         </tbody>
       </table>
 
+      <div class="callout">
+        <strong>Analyst Note</strong>
+        <p>
+          This report records the observations and indicators supplied for the analyzed sample.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <div class="packed-dropper-sample">
+    <section>
+      <div class="section-head">
+        <div class="number">02</div>
+        <h2>Initial Observation</h2>
+      </div>
+      <ul>
+        <li>First of all, the original packed sample was identified as a dropper for the Stealc info-stealer.
+        This report contains a detailed static and dynamic analysis of the sample, including its unpacking process and behavioral characteristics.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="number">03</div>
+        <h2>Static Analysis</h2>
+      </div>
+      
+      <!-- ========== TABS (CSS-only) ========== -->
+      <div class="tabs">
+        <input type="radio" name="static-tab" id="st-die" checked>
+        <input type="radio" name="static-tab" id="st-pe">
+        <input type="radio" name="static-tab" id="st-sec">
+        <input type="radio" name="static-tab" id="st-mcapa">
+        <input type="radio" name="static-tab" id="st-ida">
+
+        <div class="tabs__bar" role="tablist">
+          <label class="tab" for="st-die" role="tab">
+            <img class="tab__thumb" src="img/die.jfif" alt="">
+            <span class="tab__title">DIE Basic Analysis</span>
+          </label>
+          <label class="tab" for="st-pe" role="tab">
+            <img class="tab__thumb" src="img/die.jfif" alt="">
+            <span class="tab__title">DIE Yara Rules</span>
+          </label>
+          <label class="tab" for="st-sec" role="tab">
+            <img class="tab__thumb" src="img/die.jfif" alt="">
+            <span class="tab__title">DIE Imports</span>
+          </label>
+
+          <label class="tab" for="st-mcapa" role="tab">
+            <img class="tab__thumb" src="img/malcat_icon.png" alt="">
+            <span class="tab__title">Malcat & CAPA</span>
+          </label>
+          
+          <label class="tab" for="st-ida" role="tab">
+            <img class="tab__thumb" src="img/IDAIcon.png" alt="">
+            <span class="tab__title">IDA Pro</span>
+          </label>
+        </div>
+
+        <div class="tabs__panels">
+          <div class="panel" data-panel="die">
+            <div class="static_images_block">
+            <div class="die-image1">
+              <img src="img/DIE-STAGE1.png" alt="Static Analysis - DIE Stage 1" class="die-stage1">
+            </div>
+            <p>Here it is clearly seen that the sample is written in C/C++, has a high entropy, and exhibits typical characteristics of a packed executable.</p>
+          </div>
+            <div class="panel__caption">
+              <strong>Detect It Easy — Stage 1</strong>
+              <span class="panel__tag">PE32</span>
+            </div>
+          </div>
+
+
+          <div class="panel" data-panel="pe">
+            <div class="static_images_block">
+            <div class="die-image1">
+              <img src="img/DIE-YARA-STAGE1.png" alt="Static Analysis - DIE Stage 1" class="die-stage2">
+              </div>
+              <p>Yara rules for detecting cryptographic operations in the sample. It is explicitly seen that there are multiple crypto signatures.</p>
+            </div>
+            <div class="panel__caption">
+              <strong>Detect It Easy — Stage 2</strong>
+              <span class="panel__tag">PE32</span>
+            </div>
+          </div>
+
+
+          <div class="panel" data-panel="sec">
+             <div class="static_images_block">
+                <div class="die-image1">
+                  <img src="img/DIE-VIRTUALALLOCFUNCS.png" alt="Static Analysis - DIE Stage 1" class="die-stage3">
+                </div>
+                <p>Frequently, a packer allocates and changes memory using Virtual* functions to prepare a space for the unpacked code.
+                  So, it is nessary to trace the VirtualAlloc, VirtualProtect, and other related functions such as LocalAlloc, HeapAlloc and etc.
+                    to determine where the unpacker is going to write the code.
+                </p>
+            </div>
+
+            <div class="static_images_block">
+                <div class="die-image1">
+                  <img src="img/DIE-DEBUGGER_IMPORTS.png" alt="Static Analysis - DIE Stage 1" class="die-stage3">
+                </div>
+                <p>These are the imports associated with debugger detection mechanisms - old and ineffective approaches.</p>
+                
+            </div>
+
+            <div class="panel__caption">
+              <strong>Detect It Easy — Stage 3</strong>
+              <span class="panel__tag">PE32</span>
+            </div>
+          </div>
+
+          <div class="panel" data-panel="mcapa">
+             <div class="static_images_block">
+                <div class="die-image1 bgzoom">
+                  <img src="img/MALCAT-METADATA.png" alt="Static Analysis - DIE Stage 1" class="die-stage4">
+                </div>
+                <div class="die-image1 bgzoom">
+                  <img src="img/mcapa.png" alt="Static Analysis - DIE Stage 1" class="die-stage5">
+                </div>
+
+                <p>CAPA analysis indicates the presence of dynamic RWX allocation in the sample.</p>
+            </div>
+
+            <div class="panel__caption">
+              <strong>Malcat — Stage 1</strong>
+              <span class="panel__tag">PE32</span>
+            </div>
+          </div>
+
+
+         <div class="panel" data-panel="ida">
+             <div class="static_images_block">
+
+                <div class="die-image1 bgzoom">
+                  <span class="figuren">Figure 1.5</span>
+              
+                  <img src="img/IDA-FIRST-WMAIN-JUNK-CODE.png" alt="Static Analysis - DIE Stage 1" class="die-stage4">
+                </div>
+
+
+                <div class="die-image1 bgzoom">
+                  <span class="figuren">Figure 1.1</span>
+                  <img src="img/LOCAL_ALLOC_VIRTUAL_PROTECT.png" alt="Static Analysis - DIE Stage 1" class="die-stage5">
+                </div>
+                <p>
+                  Figure 1.1 illustrates the local allocation and virtual protect calls WITH <b>PAGE_EXECUTE_READWRITE</b> (0x40u) argument.<br>
+                  LocalAlloc allocates memory and its address is assigned to a dword_4C1AA4 variable, keep it in mind for later analysis.
+                </p>
+
+
+                <div class="die-image1 bgzoom">
+                  <span class="figuren">Figure 1.2</span>
+
+                  <img src="img/RETURN_TRANSIT_CONTROL_TO_UNPACKING_CODE.png" alt="Static Analysis - DIE Stage 1" class="die-stage5">
+                </div>
+
+                <div class="die-image1 bgzoom">
+                  <span class="figuren">Figure 1.3</span>
+
+                  <img src="img/IDA-LAST.png" alt="Static Analysis - DIE Stage 1" class="die-stage5">
+                </div>
+
+                <p>
+                   Finally, in Figure 1.2, a function is called via dword_4C1AA4, which has not been assigned a value yet. Therefore, let's proceed with dynamic analysis.
+                </p>
+
+            </div>
+
+            <div class="panel__caption">
+              <strong>IDA Pro — Stage 1</strong>
+              <span class="panel__tag">Pseudo-code</span>
+            </div>
+          </div>
+
+
+
+        </div>
+      </div>
+      <!-- ========== /TABS ========== -->
+
+
+
+    
+
+
+    </section>
+    
+    
+    <section>
+
+
+      <div class="section-head">
+        <div class="number">04</div>
+        <h2>Dynamic Analysis</h2>
+      </div>
+
+      <div class="tabs">
+        <input type="radio" name="static-tab2" id="st-xdbg" checked> 
+      
+        <div class="tabs__bar" role="tablist">
+          <label class="tab" for="st-xdbg" role="tab">
+            <img class="tab__thumb" src="img/xdbg.ico.ico" alt="">
+            <span class="tab__title">x64dbg</span>
+          </label>
+    
+        </div>
+
+        <div class="tabs__panels">
+          <div class="panel" data-panel="d_xdbg">
+          <div class="static_images_block">
+
+            <div class="die-image1 bgzoom">
+              <span class="figuren">Figure 1.4</span>
+              <img src="img/idawwinmain.png" alt="dynalys" class="die-stage4">
+            </div>
+            <p>In Figure 1.4, it is showed that wWinMain function starts at <b>0x004018F7</b> address.
+               Since <b>ASLR</b> is disabled for this executable, it's possible to copy and just paste that address in the x32dbg and find the function during dynamic analysis. </p>
+          
+            <div class="die-image1 bgzoom">
+                <span class="figuren">Figure 1.6</span>
+                <img src="img/XDBG-GotoExpressionIda.png" alt="dynalys" class="die-stage4">
+            </div>
+                <p>In Static Analysis table and in IDA Pro column, Figure 1.5 illustrated wWinMain function in the form of pseudocode, 
+                  there was sub_4016CA function that needs to be analyzed, therefore the goal is to find the exact function calling in x32dbg. Let's proceed to Figure 1.7</p>
+           
+             <div class="die-image1 bgzoom">
+                <span class="figuren">Figure 1.7</span>
+                <img src="img/CAFUNC.png" alt="dynalys" class="die-stage4">
+            </div>
+            
+            <div class="die-image1 bgzoom">
+                <span class="figuren">Figure 1.8</span>
+                <img src="img/XDBG-ALLOC-PROTECT.png" alt="dynalys" class="die-stage4">
+            </div>
+             <p>a. LocalAlloc was called,<br> b. dword_4C1AA4,
+               <br>c. LocalAlloc return value(address for shellcode) was moved to [b],
+               <br>e. VirtualProtect with RWX [0x40] as an argument.
+               <br><br>Let's continue with setting breakpoints at key instructions
+              
+              
+              </p>
+          
+            <!--<div class="die-image1 bgzoom">
+                <span class="figuren">Figure 1.8</span>
+               <img src="img/XDBG-LOCALALLOC-BREAKPOINT.png" alt="dynalys" class="die-stage4">
+            </div>
+             <div class="die-image1 bgzoom">
+                              <span class="figuren">Figure 1.9</span>
+                <img src="img/XDBGAC-BREAKPOINT.png" alt="dynalys" class="die-stage4">
+            </div>-->
+
+            <div class="die-image1 bgzoom">
+                <span class="figuren">Figure 2.0</span>
+                <img src="img/VRALC-BREAKPOINT.png" alt="dynalys" class="die-stage4">
+            </div>
+
+            <div class="die-image1 bgzoom">
+                <span class="figuren">Figure 2.1</span>
+                <img src="img/XDBG-A4-CONTAIN-DUMP.png" alt="dynalys" class="die-stage4">
+            </div>
+            <p>
+              As seen in Figure 2.0, breakpoint at <b>0x401871</b> was triggered 
+              and dword_0x4C1AA4 holds the value <b>0x66DFD8</b> at the moment.      
+              <br>Supposedly, the shellcode located at <b>0x66DFD8</b> is the unpacker's code. 
+              <br><br>Let's move on to this code in <b>x32dbg Disassemler.</b>
+            </p>
+            <div class="die-image1 bgzoom">
+                <span class="figuren">Figure 2.2</span>
+                <img src="img/DISASM-A4D8-CODE.png" alt="dynalys" class="die-stage4">
+            </div>
+             <p>
+              To analyze the behavior of this code, it is necessary to dump the entire memory region.
+              Let's find out at which memory area the code is located by using <b>x32dbg Memory Map.</b> 
+            </p>
+            <div class="die-image1 bgzoom">
+                <span class="figuren">Figure 2.3</span>
+                <img src="img/using memory map.png" alt="dynalys" class="die-stage4">
+            </div>
+            <div class="die-image1 bgzoom">
+                <span class="figuren">Figure 2.4</span>
+                <img src="img/MEMORYDUMP_OF_CODE.png" alt="dynalys" class="die-stage4">
+            </div>
+            <p>
+              Once the memory dump was obtained, <a href="https://github.com/mandiant/flare-floss">Floss</a>
+              was used to extract any useful string from the dump file.        
+            </p>
+             <div class="die-image1 bgzoom">
+                <span class="figuren">Figure 2.5</span>
+                <img src="img/STRING_CHECK_DUMPAREA.png" alt="dynalys" class="die-stage4">
+            </div>
+            <p>It's clearly showed that there were used a few noticeable Win API functions:
+               <b> VirtualAlloc, CreateToolhelp32Snapshot, Module32First</b><br><br>
+              Now, there is a hint about what is going to do that dumped code.
+              
+              </p>
+          </div>
+
+          <div class="panel__caption">
+              <strong>x32dbg — Stage 1</strong>
+              <span class="panel__tag">Disassembly</span>
+            </div>
+          </div>
+
+
+
+      
+
+        </div>
+      </div>
+   
+      
+     </section>
+  </div>
+
+  <section class="section-footer">
+    <div class="report-meta">
+      <div class="section-head-metadata">
+        <div class="number"></div>
+        <h2>Metadata</h2>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Category</th><th>Value</th></tr>
+        </thead>
+        <tbody class="metadata-table-body">
+          <tr><td>Report ID</td><td><code>TB-MAR-2026-014</code></td></tr>
+          <tr><td>Report Title</td><td><code>Stealc Infostealer — Analysis of Sample and Behavioral Profile</code></td></tr>
+          <tr><td>Report Version</td><td><code>1.0</code></td></tr>
+          <tr><td>TLP Marking</td><td><code>TLP:AMBER</code></td></tr>
+          <tr><td>Author / Analyst</td><td><code>Talleyrand [Internals], Malware Analyst</code></td></tr>
+          <tr><td>Organization</td><td><code>Independent Researcher</code></td></tr>
+          <tr><td>Date Created</td><td><code>2026-11-15</code></td></tr>
+          <tr><td>Last Updated</td><td><code>2026-11-15</code></td></tr>
+          <tr><td>Confidence (overall)</td><td><code>High</code></td></tr>
+          <tr><td>Confidence rationale</td><td><code>Behavior matches the publicly documented Stealc profile (7 DLL downloads, HTTP POST exfiltration); static and dynamic analysis are consistent</code></td></tr>
+          <tr><td>Intended Audience</td><td><code>SOC L1/L2, IR team, contractual clients (need-to-know)</code></td></tr>
+          <tr><td>Distribution</td><td><code>Internal + partners under TLP:AMBER</code></td></tr>
+          <tr><td>Related Reports</td><td><code>— (or IDs of previous reports on this family)</code></td></tr>
+          <tr><td>Source / Collection</td><td><code>Sample obtained from malware sandbox / public feed; analysis — static + dynamic</code></td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  
-<section>
-
-  <div class="section-head">
-    <div class="number">08</div>
-    <h2>Indicators of Compromise</h2>
-  </div>
-
-
-  <table>
-    <thead>
-      <tr><th>Category</th><th>Indicator</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Registry Key</td><td><code>HKCU\Software\BroomCleaner</code></td></tr>
-      <tr><td>Registry Value</td><td><code>Installed = 1</code></td></tr>
-      <tr><td>Network</td><td><code>185.172.128.59 - RU</code></td></tr>
-      <tr><td>Network</td><td><code>185.172.128.90 - RU</code></td></tr>
-      <tr><td>Network</td><td><code>185.172.128.228 - RU</code></td></tr>
-      <tr><td>Dropped File</td><td><code>C:\Users\<[username]>\AppData\Local\Temp\u5vg.0.exe (The first PE file [syncUpd.exe] from endpoint)</code></td></tr>
-      <tr><td>Dropped File</td><td><code>C:\Users\<[username]>\AppData\Local\Temp\u5vg.1.exe (The second PE file [BroomSetup.exe] from endpoint)</code></td></tr>
-    </tbody>
-  </table>
-
-  <div class="callout">
-    <strong>Analyst Note</strong>
-    <p>
-      This report records the observations and indicators supplied for the analyzed sample.
-      It does not independently validate attribution, infrastructure ownership,
-      or the broader malware campaign.
-    </p>
-  </div>
-</section>
-
-<footer>
-  <span>STEALC INFO-STEALER · PACKED DROPPER</span>
-  <span>Malware Analysis Report</span>
-</footer>
+  <footer>
+    <span>STEALC INFO-STEALER · PACKED DROPPER</span>
+    <span>Malware Analysis Report</span>
+  </footer>
 
 </main>
+
 </body>
 </html>
