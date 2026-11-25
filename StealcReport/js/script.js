@@ -54,6 +54,12 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ---------- DIE: зум по клику ---------- */
+  const goToFloss = document.querySelector(".goToFloss");
+  goToFloss.addEventListener('click', () => document.getElementById('st-floss').checked = true);
+  const goToFloss2 = document.querySelector(".gtfn2");
+  goToFloss2.addEventListener('click', () => document.getElementById('st-xdbg').checked = true);
+
+
   const dieBox = document.querySelectorAll('.die-image1');
   if (dieBox) {
     dieBox.forEach(box => {

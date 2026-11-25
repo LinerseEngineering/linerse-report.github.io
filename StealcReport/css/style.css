@@ -918,6 +918,16 @@ body:has(.die-image1.bgzoom.unzoomed) {
     flex-shrink: 0;
 }
 
+.tab__thumb.floss {
+    object-fit: contain;
+    
+    transform: scale(2) translateX(10%);
+}
+
+.tab__title.floss {
+    margin: 0px 0px 0px 15px;
+}
+
 .tab__title {
     font-size: 13px;
     font-weight: 500;
@@ -931,7 +941,9 @@ body:has(.die-image1.bgzoom.unzoomed) {
 .tabs:has(#st-pe:checked)  .tab[for="st-pe"],
 .tabs:has(#st-sec:checked)  .tab[for="st-sec"],
 .tabs:has(#st-mcapa:checked) .tab[for="st-mcapa"],
+.tabs:has(#st-floss:checked) .tab[for="st-floss"],
 .tabs:has(#st-xdbg:checked) .tab[for="st-xdbg"],
+.tabs:has(#st-idapro:checked) .tab[for="st-idapro"],
 .tabs:has(#st-ida:checked) .tab[for="st-ida"] {
     background: #252525;
     color: var(--white);
@@ -947,6 +959,8 @@ body:has(.die-image1.bgzoom.unzoomed) {
 .tabs:has(#st-pe:checked)  .tab[for="st-pe"]::before,
 .tabs:has(#st-xdbg:checked) .tab[for="st-xdbg"]::before,
 .tabs:has(#st-sec:checked)  .tab[for="st-sec"]::before,
+.tabs:has(#st-idapro:checked)  .tab[for="st-idapro"]::before,
+.tabs:has(#st-floss:checked)  .tab[for="st-floss"]::before,
 .tabs:has(#st-mcapa:checked) .tab[for="st-mcapa"]::before,
 .tabs:has(#st-ida:checked) .tab[for="st-ida"]::before {
     content: "";
@@ -963,7 +977,9 @@ body:has(.die-image1.bgzoom.unzoomed) {
 .tabs:has(#st-die:checked) .tab[for="st-die"] .tab__thumb,
 .tabs:has(#st-pe:checked)  .tab[for="st-pe"] .tab__thumb,
 .tabs:has(#st-sec:checked)  .tab[for="st-sec"] .tab__thumb,
+.tabs:has(#st-idapro:checked)  .tab[for="st-idapro"] .tab__thumb,
 .tabs:has(#st-xdbg:checked) .tab[for="st-xdbg"] .tab__thumb,
+.tabs:has(#st-floss:checked) .tab[for="st-floss"] .tab__thumb,
 .tabs:has(#st-mcapa:checked) .tab[for="st-mcapa"] .tab__thumb,
 .tabs:has(#st-ida:checked) .tab[for="st-ida"] .tab__thumb {
     border-color: var(--yellow);
@@ -988,6 +1004,8 @@ body:has(.die-image1.bgzoom.unzoomed) {
 .tabs:has(#st-die:checked) .panel[data-panel="die"],
 .tabs:has(#st-pe:checked)  .panel[data-panel="pe"],
 .tabs:has(#st-xdbg:checked)  .panel[data-panel="d_xdbg"],
+.tabs:has(#st-floss:checked)  .panel[data-panel="floss"],
+.tabs:has(#st-idapro:checked)  .panel[data-panel="idapro"],
 .tabs:has(#st-sec:checked)  .panel[data-panel="sec"],
 .tabs:has(#st-mcapa:checked) .panel[data-panel="mcapa"],
 .tabs:has(#st-ida:checked) .panel[data-panel="ida"] {
@@ -1028,7 +1046,7 @@ body:has(.die-image1.bgzoom.unzoomed) {
     padding: 3px 10px;
     border-radius: 999px;
     font-size: 12px;
-    white-space: nowrap;
+    white-space: wrap;
 }
 
 /* ============================================================= */
@@ -1218,4 +1236,22 @@ body:has(.die-image1.bgzoom.unzoomed) {
     body { background: var(--black); }
     section { break-inside: avoid; }
     .container { width: 94%; }
+}
+
+
+.goToFloss {
+    font-size: 20px;
+    padding: 0px 5px;
+    border: 2px solid var(--yellow);
+    text-decoration: none;
+    pointer-events: all;
+    cursor: pointer;
+}
+.goToFloss:hover {
+    font-size: 20px;
+    padding: 0px 5px;
+    border: 2px solid var(--yellow);
+    text-decoration: none;
+    pointer-events: all;
+    cursor: pointer;
 }

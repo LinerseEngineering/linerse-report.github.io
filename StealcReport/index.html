@@ -34,7 +34,7 @@
         </div>
         <div>
           <span class="label">Tools</span>
-          <span class="value">MalNetRedirect - x64dbg - WinAPI tracing - Frida - BinaryNinja - DIE - PE Tools</span>
+          <span class="value">MalNetRedirect - x64dbg - WinAPI tracing - Frida - Floss - BinaryNinja - DIE - PE Tools</span>
         </div>
         <div>
           <span class="label">Analysis Focus</span>
@@ -592,122 +592,264 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
     <section>
 
 
-      <div class="section-head">
+      <div id="DynamicAnalysis" class="section-head">
         <div class="number">04</div>
-        <h2>Dynamic Analysis</h2>
+        <h2>Dynamic Analysis & Static Analysis</h2>
       </div>
 
       <div class="tabs">
-        <input type="radio" name="static-tab2" id="st-xdbg" checked> 
+        <input type="radio" name="static-tab2" id="st-xdbg" checked > 
+        <input type="radio" name="static-tab2" id="st-floss"> 
+        <input type="radio" name="static-tab2" id="st-idapro"> 
       
         <div class="tabs__bar" role="tablist">
           <label class="tab" for="st-xdbg" role="tab">
             <img class="tab__thumb" src="img/xdbg.ico.ico" alt="">
             <span class="tab__title">x64dbg</span>
           </label>
+
+          <label class="tab" for="st-floss" role="tab">
+            <img class="tab__thumb floss" src="img/FLOSS_ICO.png" alt="">
+            <span class="tab__title floss">Floss</span>
+          </label>
     
+          <label class="tab" for="st-idapro" role="tab">
+            <img class="tab__thumb" src="img/IDAIcon.png" alt="">
+            <span class="tab__title">IDA Pro</span>
+          </label>
         </div>
 
         <div class="tabs__panels">
-          <div class="panel" data-panel="d_xdbg">
-          <div class="static_images_block">
+                        <div class="panel" data-panel="d_xdbg">
+                                      <div class="static_images_block">
 
-            <div class="die-image1 bgzoom">
-              <span class="figuren">Figure 1.4</span>
-              <img src="img/idawwinmain.png" alt="dynalys" class="die-stage4">
-            </div>
-            <p>In Figure 1.4, it is showed that wWinMain function starts at <b>0x004018F7</b> address.
-               Since <b>ASLR</b> is disabled for this executable, it's possible to copy and just paste that address in the x32dbg and find the function during dynamic analysis. </p>
-          
-            <div class="die-image1 bgzoom">
-                <span class="figuren">Figure 1.6</span>
-                <img src="img/XDBG-GotoExpressionIda.png" alt="dynalys" class="die-stage4">
-            </div>
-                <p>In Static Analysis table and in IDA Pro column, Figure 1.5 illustrated wWinMain function in the form of pseudocode, 
-                  there was sub_4016CA function that needs to be analyzed, therefore the goal is to find the exact function calling in x32dbg. Let's proceed to Figure 1.7</p>
-           
-             <div class="die-image1 bgzoom">
-                <span class="figuren">Figure 1.7</span>
-                <img src="img/CAFUNC.png" alt="dynalys" class="die-stage4">
-            </div>
-            
-            <div class="die-image1 bgzoom">
-                <span class="figuren">Figure 1.8</span>
-                <img src="img/XDBG-ALLOC-PROTECT.png" alt="dynalys" class="die-stage4">
-            </div>
-             <p>a. LocalAlloc was called,<br> b. dword_4C1AA4,
-               <br>c. LocalAlloc return value(address for shellcode) was moved to [b],
-               <br>e. VirtualProtect with RWX [0x40] as an argument.
-               <br><br>Let's continue with setting breakpoints at key instructions
-              
-              
-              </p>
-          
-            <!--<div class="die-image1 bgzoom">
-                <span class="figuren">Figure 1.8</span>
-               <img src="img/XDBG-LOCALALLOC-BREAKPOINT.png" alt="dynalys" class="die-stage4">
-            </div>
-             <div class="die-image1 bgzoom">
-                              <span class="figuren">Figure 1.9</span>
-                <img src="img/XDBGAC-BREAKPOINT.png" alt="dynalys" class="die-stage4">
-            </div>-->
+                                        <div class="die-image1 bgzoom">
+                                          <span class="figuren">Figure 1.4</span>
+                                          <img src="img/idawwinmain.png" alt="dynalys" class="die-stage4">
+                                        </div>
+                                        <p>In Figure 1.4, it is showed that wWinMain function starts at <b>0x004018F7</b> address.
+                                          Since <b>ASLR</b> is disabled for this executable, it's possible to copy and just paste that address in the x32dbg and find the function during dynamic analysis. </p>
+                                      
+                                        <div class="die-image1 bgzoom">
+                                            <span class="figuren">Figure 1.6</span>
+                                            <img src="img/XDBG-GotoExpressionIda.png" alt="dynalys" class="die-stage4">
+                                        </div>
+                                            <p>In Static Analysis table and in IDA Pro column, Figure 1.5 illustrated wWinMain function in the form of pseudocode, 
+                                              there was sub_4016CA function that needs to be analyzed, therefore the goal is to find the exact function calling in x32dbg. Let's proceed to Figure 1.7</p>
+                                      
+                                        <div class="die-image1 bgzoom">
+                                            <span class="figuren">Figure 1.7</span>
+                                            <img src="img/CAFUNC.png" alt="dynalys" class="die-stage4">
+                                        </div>
+                                        
+                                        <div class="die-image1 bgzoom">
+                                            <span class="figuren">Figure 1.8</span>
+                                            <img src="img/XDBG-ALLOC-PROTECT.png" alt="dynalys" class="die-stage4">
+                                        </div>
+                                        <p>a. LocalAlloc was called,<br> b. dword_4C1AA4,
+                                          <br>c. LocalAlloc return value(address for shellcode) was moved to [b],
+                                          <br>e. VirtualProtect with RWX [0x40] as an argument.
+                                          <br><br>Let's continue with setting breakpoints at key instructions
+                                          
+                                          
+                                          </p>
+                                      
+                                        <!--<div class="die-image1 bgzoom">
+                                            <span class="figuren">Figure 1.8</span>
+                                          <img src="img/XDBG-LOCALALLOC-BREAKPOINT.png" alt="dynalys" class="die-stage4">
+                                        </div>
+                                        <div class="die-image1 bgzoom">
+                                                          <span class="figuren">Figure 1.9</span>
+                                            <img src="img/XDBGAC-BREAKPOINT.png" alt="dynalys" class="die-stage4">
+                                        </div>-->
 
-            <div class="die-image1 bgzoom">
-                <span class="figuren">Figure 2.0</span>
-                <img src="img/VRALC-BREAKPOINT.png" alt="dynalys" class="die-stage4">
-            </div>
+                                        <div class="die-image1 bgzoom">
+                                            <span class="figuren">Figure 2.0</span>
+                                            <img src="img/VRALC-BREAKPOINT.png" alt="dynalys" class="die-stage4">
+                                        </div>
 
-            <div class="die-image1 bgzoom">
-                <span class="figuren">Figure 2.1</span>
-                <img src="img/XDBG-A4-CONTAIN-DUMP.png" alt="dynalys" class="die-stage4">
-            </div>
-            <p>
-              As seen in Figure 2.0, breakpoint at <b>0x401871</b> was triggered 
-              and dword_0x4C1AA4 holds the value <b>0x66DFD8</b> at the moment.      
-              <br>Supposedly, the shellcode located at <b>0x66DFD8</b> is the unpacker's code. 
-              <br><br>Let's move on to this code in <b>x32dbg Disassemler.</b>
-            </p>
-            <div class="die-image1 bgzoom">
-                <span class="figuren">Figure 2.2</span>
-                <img src="img/DISASM-A4D8-CODE.png" alt="dynalys" class="die-stage4">
-            </div>
-             <p>
-              To analyze the behavior of this code, it is necessary to dump the entire memory region.
-              Let's find out at which memory area the code is located by using <b>x32dbg Memory Map.</b> 
-            </p>
-            <div class="die-image1 bgzoom">
-                <span class="figuren">Figure 2.3</span>
-                <img src="img/using memory map.png" alt="dynalys" class="die-stage4">
-            </div>
-            <div class="die-image1 bgzoom">
-                <span class="figuren">Figure 2.4</span>
-                <img src="img/MEMORYDUMP_OF_CODE.png" alt="dynalys" class="die-stage4">
-            </div>
-            <p>
-              Once the memory dump was obtained, <a href="https://github.com/mandiant/flare-floss">Floss</a>
-              was used to extract any useful string from the dump file.        
-            </p>
-             <div class="die-image1 bgzoom">
-                <span class="figuren">Figure 2.5</span>
-                <img src="img/STRING_CHECK_DUMPAREA.png" alt="dynalys" class="die-stage4">
-            </div>
-            <p>It's clearly showed that there were used a few noticeable Win API functions:
-               <b> VirtualAlloc, CreateToolhelp32Snapshot, Module32First</b><br><br>
-              Now, there is a hint about what is going to do that dumped code.
-              
-              </p>
-          </div>
+                                        <div class="die-image1 bgzoom">
+                                            <span class="figuren">Figure 2.1</span>
+                                            <img src="img/XDBG-A4-CONTAIN-DUMP.png" alt="dynalys" class="die-stage4">
+                                        </div>
+                                        <p>
+                                          As seen in Figure 2.0, breakpoint at <b>0x401871</b> was triggered 
+                                          and dword_0x4C1AA4 holds the value <b>0x66DFD8</b> at the moment.      
+                                          <br>Supposedly, the shellcode located at <b>0x66DFD8</b> is the unpacker's code. 
+                                          <br><br>Let's move on to this code in <b>x32dbg Disassemler.</b>
+                                        </p>
+                                        <div class="die-image1 bgzoom">
+                                            <span class="figuren">Figure 2.2</span>
+                                            <img src="img/DISASM-A4D8-CODE.png" alt="dynalys" class="die-stage4">
+                                        </div>
+                                        <p>
+                                          To analyze the behavior of this code, it is necessary to dump the entire memory region.
+                                          Let's find out at which memory area the code is located by using <b>x32dbg Memory Map.</b> 
+                                        </p>
+                                        <div class="die-image1 bgzoom">
+                                            <span class="figuren">Figure 2.3</span>
+                                            <img src="img/using memory map.png" alt="dynalys" class="die-stage4">
+                                        </div>
+                                        <div class="die-image1 bgzoom">
+                                            <span class="figuren">Figure 2.4</span>
+                                            <img src="img/MEMORYDUMP_OF_CODE.png" alt="dynalys" class="die-stage4">
+                                        </div>
+                                        <p>
+                                          Once the memory dump was obtained, <a href="https://github.com/mandiant/flare-floss">Floss</a>
+                                          was used to extract any useful string from the dump file.  
+                                        
+                                           <a class="goToFloss" href="#DynamicAnalysis"> Click <span>↑</span> </a>       
+                                        </p>
+                                        
+                                      </div>
 
-          <div class="panel__caption">
-              <strong>x32dbg — Stage 1</strong>
-              <span class="panel__tag">Disassembly</span>
-            </div>
-          </div>
+                                      <div class="panel__caption">
+                                        <strong>x32dbg — Stage 1</strong>
+                                          <span class="panel__tag">Disassembly</span>
+                                      </div>
+
+                        </div>
+
+                        <div class="panel" data-panel="floss">
+                              <div class="static_images_block">
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 2.5</span>
+                                    <img src="img/STRING_CHECK_DUMPAREA.png" alt="dynalys" class="die-stage4">
+                                </div>
+                                <p>It's clearly showed that there were used a few noticeable Win API functions:
+                                  <b> VirtualAlloc, CreateToolhelp32Snapshot, Module32First</b><br><br>
+                                  Now, there is a hint about what is going to do that dumped code.
+                                  </p>
+                              
+                              </div>
+
+                              <div class="panel__caption">
+                                <strong>FLARE Obfuscated String Solver — Stage 1</strong>
+                                <span class="panel__tag">String Extract</span>
+                                  
+                              </div>
+                        </div>
+
+                         <div class="panel" data-panel="idapro">
+                              <div class="static_images_block">
+
+                                <p>
+                                   The code in the dump file starts at file_offset(+DFD8) <br>
+                                   Reminding that code was at 0x6EDFD8 and the memory region was at 0x6E0000
+                                   <br><br>IDA->Jump to file offset DFD8 
+                                </p>
+
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 2.6</span>
+                                    <img src="img/DFD8_opcode.png" alt="dynalys" class="die-stage4">
+                                </div>
+
+                                <p>
+                                    Use D and C keys to make it a code or data.
+                                </p>
+
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 2.7</span>
+                                    <img src="img/DMPFILE_DFD8_offset.png" alt="dynalys" class="die-stage4">
+                                </div>
+                              
+                               
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 2.8</span>
+                                    <img src="img/DFFAPSCODE__MAPPING_STRUCT.png" alt="dynalys" class="die-stage4">
+                                </div>
+
+                                 <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 2.9</span>
+                                    <img src="img/PEB_WALKING_FUNC_READFS.png" alt="dynalys" class="die-stage4">
+                                </div>
+                                <p>It's not necessary to understand this pseudocode entirely.
+                                   Enough to know what it means to do.
+                                  <br>
+                                  <br>
+                                  <b>__readfsdword(0x30)</b> is an MSVC intrinsic (a built-in function) 
+                                  that reads a 32-bit value from memory at offset 0x30 relative 
+                                  to the FS segment register (pointer to <b>TEB</b>). In the context of 32-bit
+                                  Windows (x86), this is the standard way to obtain the address of 
+                                  the current process's <b>PEB</b> (Process Environment Block).
+                                  <br>
+                                  <br>
+                                  
+                                  <b>Bypassing API hooks</b>: <b>AV</b> and <b>EDR</b> products often hook functions like
+                                  GetModuleHandle or LoadLibrary. Reading the <b>PEB</b> directly allows an 
+                                  attacker to walk the loaded module list (via <b>PEB->Ldr</b>)
+                                  without triggering those hooks.
+                                  <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 3.0</span>
+                                    <img src="img/PEB_WALKING_ILLUSTRATION.jpeg" alt="dynalys" class="die-stage4">
+                                  </div>
 
 
+                                <p>sub_E05B is <b>PEB Walking</b> function for dynamic api resolution.
+                                   It access TEB->PEB->Ldr and then finds kernel32/ntdll Libraries/Functions in a stealth way.
+                                   <br>
+                                   <br>
+                                    As shown in F.2.8, at lines 14, 15, 18, 19  (int a1) is actually a pointer to a structure(60 bytes) 
+                                    Let's make a structure by using IDA Pro. 
+                                  
+                                  </p>
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 3.1</span>
+                                    <img src="img/IDA_CREATE_STRUCT.png" alt="dynalys" class="die-stage4">
+                                </div>
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 3.2</span>
+                                    <img src="img/MADE_STRUCT_CORRESPONDERS.png" alt="dynalys" class="die-stage4">
+                                </div>
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 3.3</span>
+                                    <img src="img/LOCALTYPES_AND_STRUCT.png" alt="dynalys" class="die-stage4">
+                                </div>
+                                  <p>Now, it looks better and comprehensible. 
+                                   It is possible to use that structure everywhere it's appropriate. 
+                                   For example, let's go back to the parent function sub_DFDE and its _BYTE v1[60] variable.<br>
+                                   In fact, it's structure a1 and it needs to be defined as a struct a1. 
+                                  </p>
+                                   <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 3.4</span>
+                                    <img src="img/DFDECHANGED.png" alt="dynalys" class="die-stage4">
+                                   </div>
 
-      
+                                  <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 3.5</span>
+                                    <img src="img/E43DFFUNCS.png" alt="dynalys" class="die-stage4">
+                                  </div>
 
+                                   <p>
+                                      In function <b>sub_E77E</b>, the malware is getting its base_mod. 
+                                      <br>
+                                      In <b>sub_E43D</b>, it allocates a memory region and then jumps to it. 
+                                      <br>
+                                      the code here not necessarily needs to be understood entirely
+                                      <br>
+                                      the logic is clear: the malware allocates memory, decrypts an encrypted code, then writes it to <b>RWX memory</b>, and jumps to it.
+                                      <br>
+                                      <br>
+                                      So, it's sensible to set a breakpoint at the beginning of <b>VirtualAlloc</b> to capture PE32 File start<br>
+                                      OR set it at sub_E43D. Remember that during dynamic analysis
+                                      the memory region of the shellcode was found at 0x660000, so the needed function is at REGION_BASE + approx.(due to cryptographic changes) 0xE43D
+
+                                      <br>
+                                      <br>
+                                      Let's move back to x32dbg and prove our hypothesis.
+                                      <a class="goToFloss gtfn2" href="#DynamicAnalysis"> Click <span>↑</span></a>     
+                                   </p>
+                                </p>
+                              
+                              </div>
+
+                              <div class="panel__caption">
+                                <strong>IDA Pro — Stage 2</strong>
+                                <span class="panel__tag">DumpFile Pseudocode and Structure</span>
+                                  
+                              </div>
+                        </div>
+         
         </div>
       </div>
    
