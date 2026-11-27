@@ -110,7 +110,7 @@
           <div class="tip-title">💣 Unpacked Dropper</div>
           <div class="tip-row">
             <span class="tip-label">SHA-256</span>
-            <span class="tip-value highlight">bb00b7e6ab5147db4976b90b0fd61ce3d194e9f9811ff2c4cdc930ab35c4cd6a</span>
+            <span class="tip-value highlight">7ce39273e3ff8f6035cb3ae85be9c2fc8ea238f521cb32bea54008d9fd0369da</span>
           </div>
           <div class="tip-row">
             <span class="tip-label">File Size</span>
@@ -601,7 +601,8 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
         <input type="radio" name="static-tab2" id="st-xdbg" checked > 
         <input type="radio" name="static-tab2" id="st-floss"> 
         <input type="radio" name="static-tab2" id="st-idapro"> 
-      
+        <input type="radio" name="static-tab2" id="st-xdbg2"> 
+
         <div class="tabs__bar" role="tablist">
           <label class="tab" for="st-xdbg" role="tab">
             <img class="tab__thumb" src="img/xdbg.ico.ico" alt="">
@@ -616,6 +617,11 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
           <label class="tab" for="st-idapro" role="tab">
             <img class="tab__thumb" src="img/IDAIcon.png" alt="">
             <span class="tab__title">IDA Pro</span>
+          </label>
+
+            <label class="tab" for="st-xdbg2" role="tab">
+            <img class="tab__thumb" src="img/xdbg.ico.ico" alt="">
+            <span class="tab__title">x64dbg Stage 2</span>
           </label>
         </div>
 
@@ -705,7 +711,7 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 
                                       <div class="panel__caption">
                                         <strong>x32dbg — Stage 1</strong>
-                                          <span class="panel__tag">Disassembly</span>
+                                          <span class="panel__tag">Disassembly / First Dump</span>
                                       </div>
 
                         </div>
@@ -849,6 +855,122 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
                                   
                               </div>
                         </div>
+
+                         <div class="panel" data-panel="xdbg2">
+                            <div class="static_images_block">
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 3.6</span>
+                                    <img src="img/START_BREAKPOINT.png" alt="dynalys" class="die-stage4">
+                                </div>
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 3.7</span>
+                                    <img src="img/JMP__AND__VIRTUALALLOC_BRKPOINT.png" alt="dynalys" class="die-stage4">
+                                </div>
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 3.8</span>
+                                    <img src="img/VIRTUALALLOC_TRIGGER_BRKPOINT.png" alt="dynalys" class="die-stage4">
+                                </div>
+
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 4.0</span>
+                                    <img src="img/eventually_code_in_region.png" alt="dynalys" class="die-stage4">
+                                </div>
+
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 4.1</span>
+                                    <img src="img/MEMMAINREGION.png" alt="dynalys" class="die-stage4">
+                                </div>
+
+                                <p>Let's get this code dump and look at in IDA Pro, previosly, pass it throught FLOSS.</p>
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 4.2</span>
+                                    <img src="img/FLOSS2.png" alt="dynalys" class="die-stage4">
+                                </div>
+                             
+                                <p>After obtaining useful strings and hints, let's proceed to analyzing the dump in IDA Pro.</p>
+
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 4.3</span>
+                                    <img src="img/DUMP_IDA_OPCODES.png" alt="dynalys" class="die-stage4">
+                                </div>  
+                                
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 4.4</span>
+                                    <img src="img/SUB_3C____MAIN_ENCODER.png" alt="dynalys" class="die-stage4">
+                                </div>
+                             
+                                <div class="die-image1 pwithcode">
+                                      <p>
+                                        As shown in F.4.4, there are shifted pointers.
+                                        It's used because LOCAL VARIABLES are always placed in the negative side of EBP.<br>
+                                      </p>
+                                      
+                                      <div class="code-insert">
+                                        <div class="code-title">
+                                            <h2>EXAMPLE :</h2>
+                                        </div>
+                                        <div class="code-code">
+                                            <code>
+                                                    PUSH ebp <br>
+                                                    MOV ebp, esp<br>
+                                                    SUB esp, 0x1000<br>
+                                                    MOV <b>[ebp-04h]</b>, 05h 
+                                            </code>  
+                                        </div> 
+                                      </div>
+                                      
+                                      <p>
+                                         As seen, it's going to change EBP-04h variable and shift is a negative value.
+                                         Therefore, shifted pointer are necessarily used. 
+                                      </p>
+                                </div>
+
+                               
+                              
+
+                              
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 4.5</span>
+                                    <img src="img/SHIFTED_POINTERS.png" alt="dynalys" class="die-stage4">
+                                </div>
+
+                                
+
+                                 
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 4.6</span>
+                                    <img src="img/LAST_JMP.png" alt="dynalys" class="die-stage4">
+                                </div>
+
+
+                                
+                                <p>
+                                   Supposedly, the final logic will be written to dCodeCave<br> [56. Line: VirtualAlloc with RW then it was made RWX by VirtualProtect]
+                                   After all of it, JMP to EAX. 
+                                </p>
+
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 4.7</span>
+                                    <img src="img/LAST_VALLOC_BRKPOINT.png" alt="dynalys" class="die-stage4">
+                                </div>
+
+                                <div class="die-image1 bgzoom">
+                                    <span class="figuren">Figure 4.8</span>
+                                    <img src="img/SKIP_LOOP_WRITING.png" alt="dynalys" class="die-stage4">
+                                </div>
+
+                                <p>The filling part was skipped and now there is a PE32 file header
+                                   [4D5A "MZ"] in the memory region.
+                                   This region is PE32 file and it needs to be dumped and analyzed.
+                                  </p>
+
+                            </div>
+
+                                <div class="panel__caption">
+                                    <strong>x32dbg — Stage 2</strong>
+                                    <span class="panel__tag">Disassembly / Second Dump</span>
+                                </div>
+                          </div>
          
         </div>
       </div>

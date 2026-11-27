@@ -943,6 +943,7 @@ body:has(.die-image1.bgzoom.unzoomed) {
 .tabs:has(#st-mcapa:checked) .tab[for="st-mcapa"],
 .tabs:has(#st-floss:checked) .tab[for="st-floss"],
 .tabs:has(#st-xdbg:checked) .tab[for="st-xdbg"],
+.tabs:has(#st-xdbg2:checked) .tab[for="st-xdbg2"],
 .tabs:has(#st-idapro:checked) .tab[for="st-idapro"],
 .tabs:has(#st-ida:checked) .tab[for="st-ida"] {
     background: #252525;
@@ -958,6 +959,7 @@ body:has(.die-image1.bgzoom.unzoomed) {
 .tabs:has(#st-die:checked) .tab[for="st-die"]::before,
 .tabs:has(#st-pe:checked)  .tab[for="st-pe"]::before,
 .tabs:has(#st-xdbg:checked) .tab[for="st-xdbg"]::before,
+.tabs:has(#st-xdbg2:checked) .tab[for="st-xdbg2"]::before,
 .tabs:has(#st-sec:checked)  .tab[for="st-sec"]::before,
 .tabs:has(#st-idapro:checked)  .tab[for="st-idapro"]::before,
 .tabs:has(#st-floss:checked)  .tab[for="st-floss"]::before,
@@ -979,6 +981,7 @@ body:has(.die-image1.bgzoom.unzoomed) {
 .tabs:has(#st-sec:checked)  .tab[for="st-sec"] .tab__thumb,
 .tabs:has(#st-idapro:checked)  .tab[for="st-idapro"] .tab__thumb,
 .tabs:has(#st-xdbg:checked) .tab[for="st-xdbg"] .tab__thumb,
+.tabs:has(#st-xdbg2:checked) .tab[for="st-xdbg2"] .tab__thumb,
 .tabs:has(#st-floss:checked) .tab[for="st-floss"] .tab__thumb,
 .tabs:has(#st-mcapa:checked) .tab[for="st-mcapa"] .tab__thumb,
 .tabs:has(#st-ida:checked) .tab[for="st-ida"] .tab__thumb {
@@ -1004,6 +1007,7 @@ body:has(.die-image1.bgzoom.unzoomed) {
 .tabs:has(#st-die:checked) .panel[data-panel="die"],
 .tabs:has(#st-pe:checked)  .panel[data-panel="pe"],
 .tabs:has(#st-xdbg:checked)  .panel[data-panel="d_xdbg"],
+.tabs:has(#st-xdbg2:checked)  .panel[data-panel="xdbg2"],
 .tabs:has(#st-floss:checked)  .panel[data-panel="floss"],
 .tabs:has(#st-idapro:checked)  .panel[data-panel="idapro"],
 .tabs:has(#st-sec:checked)  .panel[data-panel="sec"],
@@ -1012,6 +1016,53 @@ body:has(.die-image1.bgzoom.unzoomed) {
     display: block;
 }
 
+.code-insert {
+    position: relative;
+    width: max-content;
+    
+   padding: 40px 0 0 0;
+  
+}
+
+.code-title h2{
+    left: -50px;
+    top: 0;
+    position: absolute;
+    font-size: 25px;
+    color:  rgb(193, 91, 91);;
+}
+
+.code-code {
+   border: 3px solid rgb(67, 33, 33);
+   padding: 7px 9px;
+   border-radius: 3px;
+}
+
+.code-code code {
+    width: max-content;
+    color: rgb(188, 106, 106);
+    font-size: 20px;
+}
+
+.code-code b {
+   color: rgb(238, 138, 138);
+}
+
+.pwithcode {
+    display: flex;
+    flex-direction: column;
+    background: #1e1e1e;
+    border-radius: 0;
+    border: 0;
+    justify-content: center;
+    align-items: center;
+    padding: 0 0 20px 0;
+    cursor: none;
+    pointer-events: none;
+}
+.pwithcode::after {
+    display: none;
+}
 
 .panel__img {
     width: 100%;
